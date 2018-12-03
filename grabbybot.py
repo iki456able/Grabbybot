@@ -2,6 +2,7 @@ import discord
 import string
 import logging
 import asyncio
+import datetime
 #Set logging
 logging.basicConfig(level=logging.INFO)
 #Establish client
@@ -11,33 +12,24 @@ login = False
         
 @client.event
 async def on_ready():
-    #This is just for posterities sake
-    print('Connected')
-    print('Connect as: ' + client.user.name)
-    print('Servers connected:')
-    for x in client.servers:
-        print(x.name)
-    '''This is the target channel, make sure to
-    turn on dev mode and grab the channel id'''
-    channel = client.get_channel('channel ID')
-    '''I had issues when I didn't use UTF encoding'''
+    channel = client.get_channel('372235987520323596')
     f = open('training.txt', 'a', encoding='utf-8')
-    async for l in client.logs_from(channel, limit=100, reverse=True):
+    n = 0
+    limiter = input('set limit: ')
+    async for l in client.logs_from(channel, limit=int(limiter), before=datetime.datetime.now(), reverse=True):
         #This writes the author, then the message, adding a new line
         #Each time
-        nick = l.author.name
-        content = l.content
-        f.write(nick + ':' + '\n')
-        f.write(content + '\n')
-        f.write('' + '\n')
-        
-
-
+        #Author:
+        #Content
+        f.write(l.author.name + ':' + '\n' + l.content + '\n' + '' + '\n')
+        n = n+1
+        print('added['+ str(n) +']:' + l.author.name+ ' : ' + l.content)
+        if n == limiter:
+            break
 
 while login == False:
-    email = input('Enter your email ')
-    password = input('Enter your password ')
-    client.run(email,password) 
+    email = input('Enter email: ')
+    password = input ('Enter password: ')
+    client.run(email, password) 
     if client.is_logged_in == True:
         login == True
-
